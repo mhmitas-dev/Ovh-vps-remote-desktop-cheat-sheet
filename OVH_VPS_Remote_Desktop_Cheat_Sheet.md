@@ -1,5 +1,5 @@
 # OVH VPS Remote Desktop Cheat Sheet
-**XFCE + TigerVNC on Ubuntu 24.04 LTS**
+**XFCE + TigerVNC + NoMachine + Chrome on Ubuntu 24.04 LTS**
 
 ---
 
@@ -7,6 +7,7 @@
 - An OVH VPS (any plan) with Ubuntu 24.04 LTS installed
 - A Windows (or any) machine with an SSH client and VNC Viewer
 - VNC Viewer download: https://www.realvnc.com/en/connect/download/viewer/windows/
+- NoMachine client download: https://www.nomachine.com/download (choose Windows)
 
 ---
 
@@ -148,6 +149,48 @@ Wait ~15–20 seconds, then reconnect via VNC Viewer. If it connects successfull
 
 ---
 
+## Step 11 — Install NoMachine (for better performance)
+
+NoMachine runs alongside VNC — it does not replace it. Both will share the same XFCE desktop session.
+
+```bash
+wget https://download.nomachine.com/download/8.20/Linux/nomachine_8.20.1_1_amd64.deb
+sudo dpkg -i nomachine_8.20.1_1_amd64.deb
+```
+
+NoMachine auto-starts and auto-enables itself. Verify:
+
+```bash
+sudo systemctl status nxserver.service
+```
+
+You should see **Active: active (running)**. It listens on **port 4000** by default.
+
+---
+
+## Step 12 — Connect via NoMachine from Windows
+
+1. Download and install the NoMachine client on your Windows machine: https://www.nomachine.com/download
+2. Open NoMachine, click **Add**.
+3. Enter your VPS IP: `213.32.23.2`
+4. Port: `4000`, Protocol: **TCP**
+5. Connect. It will auto-detect and attach to the existing XFCE session.
+
+> NoMachine typically feels noticeably faster than VNC, especially for mouse and window movement. Keep both installed and use whichever feels better to you.
+
+---
+
+## Step 13 — Install Google Chrome
+
+```bash
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo dpkg -i google-chrome-stable_current_amd64.deb
+```
+
+Open Chrome from the XFCE desktop or application menu inside your remote session.
+
+---
+
 ## Quick Reference: Useful Commands
 
 | What you need | Command |
@@ -158,6 +201,11 @@ Wait ~15–20 seconds, then reconnect via VNC Viewer. If it connects successfull
 | Check VNC status | `sudo systemctl status vncserver@1.service` |
 | Change VNC password | `vncpasswd` then `sudo systemctl restart vncserver@1.service` |
 | Change resolution | Edit `-geometry` in the service file, then reload (see below) |
+| Start NoMachine | `sudo systemctl start nxserver.service` |
+| Stop NoMachine | `sudo systemctl stop nxserver.service` |
+| Restart NoMachine | `sudo systemctl restart nxserver.service` |
+| Check NoMachine status | `sudo systemctl status nxserver.service` |
+| Remove NoMachine completely | `sudo systemctl stop nxserver && sudo apt remove -y nomachine` |
 
 **To change resolution or any service setting:**
 ```bash
